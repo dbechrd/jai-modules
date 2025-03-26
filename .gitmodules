@@ -1,0 +1,27 @@
+[submodule "jai-simpler"]
+	path = jai-simpler
+	url = git@github.com:dbechrd/jai-simpler.git
+[submodule "jai-trivial"]
+	path = jai-trivial
+	url = git@github.com:dbechrd/jai-trivial.git
+[submodule "jai-yojimbo"]
+	path = jai-yojimbo
+	url = git@github.com:dbechrd/jai-yojimbo.git
+[submodule "jai-netcode"]
+	path = jai-netcode
+	url = git@github.com:dbechrd/jai-netcode.git
+[submodule "jai-ip-address"]
+	path = jai-ip-address
+	url = git@github.com:dbechrd/jai-ip-address.git
+[submodule "jai-assertive"]
+	path = jai-assertive
+	url = git@github.com:dbechrd/jai-assertive.git
+[submodule "jai-reliable"]
+	path = jai-reliable
+	url = git@github.com:dbechrd/jai-reliable.git
+[submodule "jai-serialize"]
+	path = jai-serialize
+	url = git@github.com:dbechrd/jai-serialize.git
+[submodule "jai-docs"]
+	path = jai-docs
+	url = git@github.com:dbechrd/jai-docs.git
