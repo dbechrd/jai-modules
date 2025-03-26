@@ -1,26 +1,26 @@
 [submodule "jai-simpler"]
-	path = jai-simpler
+	path = Simpler
 	url = git@github.com:dbechrd/jai-simpler.git
 [submodule "jai-trivial"]
-	path = jai-trivial
+	path = Trivial
 	url = git@github.com:dbechrd/jai-trivial.git
 [submodule "jai-yojimbo"]
-	path = jai-yojimbo
+	path = Yojimbo
 	url = git@github.com:dbechrd/jai-yojimbo.git
 [submodule "jai-netcode"]
-	path = jai-netcode
+	path = Netcode
 	url = git@github.com:dbechrd/jai-netcode.git
 [submodule "jai-ip-address"]
-	path = jai-ip-address
+	path = IPAddress
 	url = git@github.com:dbechrd/jai-ip-address.git
 [submodule "jai-assertive"]
-	path = jai-assertive
+	path = Assertive
 	url = git@github.com:dbechrd/jai-assertive.git
 [submodule "jai-reliable"]
-	path = jai-reliable
+	path = Reliable
 	url = git@github.com:dbechrd/jai-reliable.git
 [submodule "jai-serialize"]
-	path = jai-serialize
+	path = Serialize
 	url = git@github.com:dbechrd/jai-serialize.git
 [submodule "jai-docs"]
 	path = jai-docs
