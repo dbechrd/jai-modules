@@ -1,7 +1,7 @@
 /*
 Hotfixes:
 -----------
- Simp/backend/gl.jai:451 (draw_generated_quads)
+Simp/backend/gl.jai:451 (draw_generated_quads)
 
     //  PATCH(dlb): I want this per-texture, but for now, just always use linear sampling.
     //              It seems to break blending though... -_-
@@ -34,6 +34,16 @@ Simp/module.jai:212 (set_scissor)
         context.simp.texture_render_target.height;
     } else {
         context.simp.current_window_info.window_height;
+    }
+
+Input/module.jai:367 (keymap_handle_event)
+
+    if (event.type != .KEYBOARD && event.type != .MOUSE_WHEEL) return false;
+
+    if event.type == .MOUSE_WHEEL {
+        assert(event.wheel_delta != 0);
+        event.key_pressed = 1;
+        event.key_code = xx ifx event.wheel_delta > 0 then Key_Code.MOUSE_WHEEL_UP else Key_Code.MOUSE_WHEEL_DOWN;
     }
 
 SDF Fonts:
