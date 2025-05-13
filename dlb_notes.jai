@@ -36,16 +36,6 @@ Simp/module.jai:212 (set_scissor)
         context.simp.current_window_info.window_height;
     }
 
-Input/module.jai:367 (keymap_handle_event)
-
-    if (event.type != .KEYBOARD && event.type != .MOUSE_WHEEL) return false;
-
-    if event.type == .MOUSE_WHEEL {
-        assert(event.wheel_delta != 0);
-        event.key_pressed = 1;
-        event.key_code = xx ifx event.wheel_delta > 0 then Key_Code.MOUSE_WHEEL_UP else Key_Code.MOUSE_WHEEL_DOWN;
-    }
-
 SDF Fonts:
 ------------
 Simp/font.jai:814 (top of copy_glyph_to_bitmap)
@@ -56,71 +46,6 @@ Simp/font.jai:814 (top of copy_glyph_to_bitmap)
             log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
         }
     }
-
-Simp/backend/gl.jai:183
-
-    shader_text.gl_handle   = get_shader_program(SHADER_TEXT_SDF);
-
-Simp/backend/gl.jai:232
-
-    // TODO: https://cdn.cloudflare.steamstatic.com/apps/valve/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
-    // TODO: https://www.youtube.com/watch?v=1b5hIMqz_wM&t=275s
-    SHADER_TEXT_SDF :: #string END
-    OUT_IN vec2 TextureCoords;
-    OUT_IN vec4 iterated_color;
-
-    #ifdef VERTEX_SHADER
-    in vec4 vert_position;
-    in vec4 vert_color;
-    in vec2 vert_uv0;
-
-    uniform mat4 projection;
-
-    void main() {
-        gl_Position     = projection * vec4(vert_position.xy, 0.0, 1.0);
-        iterated_color  = vert_color;
-        TextureCoords   = vert_uv0;
-    }
-    #endif // VERTEX_SHADER
-
-    #ifdef FRAGMENT_SHADER
-    out vec4 color;
-
-    uniform sampler2D text_sampler;
-    uniform vec4 text_color;
-
-    void main () {
-        float inner_smooth = 0.47;  // where the smoothing between glyph color and outline begins
-        float inner_radius = 0.55;  // where the outline starts
-        float outer_radius = 0.60;  // where the outline ends
-
-        vec4 col = iterated_color;
-        float texel = texture(text_sampler, TextureCoords).a;
-        float signed_dist = 1.0 - texel;
-        if (signed_dist >= outer_radius) {
-            discard;
-        }
-        if (signed_dist >= inner_radius) {
-            // TODO: outline color
-            col.xyz = vec3(0);
-
-            // Smooth the outline outer border [inner_radius, outer_radius] -> [1, 0]
-            col.a = 1.0 - ((signed_dist - inner_radius) / (outer_radius - inner_radius));
-        } else if (signed_dist >= inner_smooth) {
-            // [inner_smooth, inner_radius] -> [0, 1]
-            float alpha = (signed_dist - inner_smooth) / (inner_radius - inner_smooth);
-
-            // Smooth the colored glyph's outer border against the outline
-            col.xyz = mix(col.xyz, vec3(0), alpha);
-
-            // Debug: Show smoothing as red/green gradient
-            // col.xyz = mix(vec3(1,0,0), vec3(0,1,0), alpha);
-        }
-        color = col;
-        // color = vec4(vec3(signed_dist), 1);
-    }
-    #endif // FRAGMENT_SHADER
-    END
 
 -----------------------------------
 // git put version into code
