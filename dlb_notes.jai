@@ -76,6 +76,39 @@ main :: () {
     }
 }
 
+------------------------------------
+// print notes, print decl notes
+------------------------------------
+#run {
+    #import "Compiler";
+    root, exprs := compiler_get_nodes(
+        #code proc :: () -> result: int @new_note_here, success: bool @must @check {
+            return true;
+        }
+    );
+
+    print("\n");
+    for expr: exprs {
+        if expr.kind == .DECLARATION {
+            decl := expr.(*Code_Declaration);
+            print("decl %", decl.name);
+            if decl.notes {
+                print(" [");
+                for note: decl.notes {
+                    print("%", note.text);
+                    if it_index < decl.notes.count-1 {
+                        print(", ");
+                    }
+                }
+                print("]");
+            }
+            print("\n");
+        }
+    }
+    print("\n");
+}
+
+
 Notes:
 -----------
 lambda -> "quick procedure" "=>"
