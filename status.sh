@@ -39,7 +39,7 @@ WHITE='\e[01;37m'
 ###################################################################
 
 # Root directory of the repository structure
-REPO_DIR=C:/Users/User/Documents/Development/jai-modules;
+REPO_DIR=C:/dojo/jai-modules;
 PULL_BEHIND=
 
 POSITIONAL=()
