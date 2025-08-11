@@ -1,6 +1,12 @@
 /*
 Hotfixes:
 -----------
+GetRect_LeftHanded/module.jai:585 (is_inside)
+
+    is_inside :: (x: float, y: float, r: Rect) -> bool {
+        return (x >= r.x) && (x < r.x + r.w) && (y >= r.y) && (y < r.y + r.h);
+    }
+
 Simp/backend/gl.jai:451 (draw_generated_quads)
 
     //  PATCH(dlb): I want this per-texture, but for now, just always use linear sampling.
