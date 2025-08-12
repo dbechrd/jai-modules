@@ -120,7 +120,11 @@ Notes:
 lambda -> "quick procedure" "=>"
 system() -> run_command()
 
-using,only(Vector2) Math :: #import "Math";
-operator+ :: #procedure_of_call Math.operator+(Vector2.{}, Vector2.{});
+so, in summary, if you want all of the operator overloads, do this:
+    using,only(.["=="]) Basic :: #import "Basic";
+if you want only specific ones, do this:
+    Basic :: #import "Basic";
+    operator == :: #procedure_of_call Basic.operator==(Basic.Apollo_Time.{}, Basic.Apollo_Time.{});
+    operator == :: #procedure_of_call Basic.operator==(Basic.U128.{}, Basic.U128.{});
 
 */
