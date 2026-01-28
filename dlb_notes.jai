@@ -21,14 +21,24 @@ IProf/instrument.jai:181 (continue the correct loop to make @NoProfile notes wor
     -   continue;
     +   continue tc;
 
-Simp/font.jai:814 (SDF glyph rendering; top of copy_glyph_to_bitmap)
+Simp/module.jai:38 (SDF glyph support)
 
-    +   if data.utf32 != #char " " {
-    +       err := FT_Render_Glyph(face.glyph, .SDF);
-    +       if err {
-    +           log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
-    +       }
-    +   }
+    #module_parameters (render_api := Render_API.OPENGL)(SDF_FONTS := false) {
+
+Simp/font.jai:814 (SDF glyph support; top of copy_glyph_to_bitmap)
+
+    #if SDF_FONTS {
+        if data.utf32 != #char " " {
+            err := FT_Render_Glyph(face.glyph, .SDF);
+            if err {
+                log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
+            }
+        }
+    }
+
+    #if SDF_FONTS {
+        data.advance += 1;
+    }
 
 Simp/immediate.jai:6 (cache texture to prevent useless texture binds)
 
