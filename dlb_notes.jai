@@ -3,33 +3,67 @@ Hotfixes:
 -----------
 Window_Creation/windows.jai:166 (hIcon = icon)
 
-    //wc.hIcon                = icon;
-    wc.hIconSm              = icon;
+    -   wc.hIcon                = icon;
+    +   wc.hIconSm              = icon;
 
 GetRect_LeftHanded/module.jai:585 (is_inside)
 
-    is_inside :: (x: float, y: float, r: Rect) -> bool {
-        return (x >= r.x) && (x < r.x + r.w) && (y >= r.y) && (y < r.y + r.h);
-    }
+    -   return (x >= r.x) && (x <= r.x + r.w) && (y >= r.y) && (y <= r.y + r.h);
+    +   return (x >= r.x) && (x < r.x + r.w) && (y >= r.y) && (y < r.y + r.h);
 
-Simp/font.jai:814 (top of copy_glyph_to_bitmap)
+Flat_Pool.jai:89 (use program parameters to allow #import de-duplication)
 
-    if data.utf32 != #char " " {
-        err := FT_Render_Glyph(face.glyph, .SDF);
-        if err {
-            log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
+    -   #module_parameters (DEFAULT_VIRTUAL_MEMORY_RESERVE := 256 * 1024 * 1024, OVERWRITE_ALL_POOLS_ON_RESET := false);
+    +   #module_parameters ()(DEFAULT_VIRTUAL_MEMORY_RESERVE := 256 * 1024 * 1024, OVERWRITE_ALL_POOLS_ON_RESET := false);
+
+IProf/instrument.jai:181 (continue the correct loop to make @NoProfile notes work properly)
+
+    -   continue;
+    +   continue tc;
+
+Simp/font.jai:814 (SDF glyph rendering; top of copy_glyph_to_bitmap)
+
+    +   if data.utf32 != #char " " {
+    +       err := FT_Render_Glyph(face.glyph, .SDF);
+    +       if err {
+    +           log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
+    +       }
+    +   }
+
+Simp/immediate.jai:6 (cache texture to prevent useless texture binds)
+
+    @@ -6,6 +6,7 @@ Immediate_State :: struct {
+         current_window_info: Window_Info;
+
+         current_shader: *Shader;
+    +    current_texture: *Texture;
+         texture_render_target: *Texture;
+         num_vertices: s32;
+
+    @@ -58,6 +59,7 @@ immediate_set_texture :: (texture: *Texture) {
+         }
+
+         backend_set_texture(shader, texture);
+    +    state.current_texture = texture;
+     }
+
+Simp/shader.jai:33
+
+    set_shader_for_images :: (texture: *Texture) {
+        CheckInit();
+
+        target_shader := ifx context.simp.coordinate_system == .LEFT_HANDED then *shader_sprite_left_handed else *shader_sprite_right_handed;
+        if state.current_texture != texture || state.current_shader != target_shader {
+            immediate_flush();
+            if state.current_shader != target_shader {
+                immediate_set_shader(target_shader);
+                set_projection();
+            }
+            immediate_set_texture(texture);
         }
     }
 
-Simp/module.jai:212 (set_scissor)
-
-    h := ifx context.simp.texture_render_target {
-        context.simp.texture_render_target.height;
-    } else {
-        context.simp.current_window_info.window_height;
-    }
-
-Simp/immediate.jai:275
+Simp/immediate.jai:195
 
     immediate_line :: (p0: Vector2, p1: Vector2, thickness: float, color: Vector4) {
         CheckSpace(6);
@@ -49,7 +83,12 @@ Simp/immediate.jai:275
         put_vertex(*v[5], v3, color, 1, 1);
     }
 
-Simp/backend/gl.jai:451 (draw_generated_quads)
+IProf/draw.jai:384 (some sort of y-flip fix, check if still needed)
+
+    -   config.draw_text(sx + 24 + name_width + field_width * (j-1) + field_width/2 - config.text_width(report.header[j])/2, sy, report.header[j], color);
+    +   config.draw_text(sx + 24 + name_width + field_width * (j-1), sy, report.header[j], color);
+
+Simp/backend/gl.jai:451 (draw_generated_quads; not sure what this patch is referring to.. try without it)
 
     //  PATCH(dlb): I want this per-texture, but for now, just always use linear sampling.
     //              It seems to break blending though... -_-
