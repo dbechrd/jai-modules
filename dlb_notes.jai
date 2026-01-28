@@ -3,6 +3,7 @@ Hotfixes:
 -----------
 Window_Creation/windows.jai:166 (hIcon = icon)
 
+    //wc.hIcon                = icon;
     wc.hIconSm              = icon;
 
 GetRect_LeftHanded/module.jai:585 (is_inside)
@@ -11,12 +12,22 @@ GetRect_LeftHanded/module.jai:585 (is_inside)
         return (x >= r.x) && (x < r.x + r.w) && (y >= r.y) && (y < r.y + r.h);
     }
 
-Simp/backend/gl.jai:451 (draw_generated_quads)
+Simp/font.jai:814 (top of copy_glyph_to_bitmap)
 
-    //  PATCH(dlb): I want this per-texture, but for now, just always use linear sampling.
-    //              It seems to break blending though... -_-
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    if data.utf32 != #char " " {
+        err := FT_Render_Glyph(face.glyph, .SDF);
+        if err {
+            log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
+        }
+    }
+
+Simp/module.jai:212 (set_scissor)
+
+    h := ifx context.simp.texture_render_target {
+        context.simp.texture_render_target.height;
+    } else {
+        context.simp.current_window_info.window_height;
+    }
 
 Simp/immediate.jai:275
 
@@ -38,24 +49,12 @@ Simp/immediate.jai:275
         put_vertex(*v[5], v3, color, 1, 1);
     }
 
-Simp/module.jai:212 (set_scissor)
+Simp/backend/gl.jai:451 (draw_generated_quads)
 
-    h := ifx context.simp.texture_render_target {
-        context.simp.texture_render_target.height;
-    } else {
-        context.simp.current_window_info.window_height;
-    }
-
-SDF Fonts:
-------------
-Simp/font.jai:814 (top of copy_glyph_to_bitmap)
-
-    if data.utf32 != #char " " {
-        err := FT_Render_Glyph(face.glyph, .SDF);
-        if err {
-            log_error("Failed to render glyph (utf32 = %) as SDF. err = %\n", data.utf32, err);
-        }
-    }
+    //  PATCH(dlb): I want this per-texture, but for now, just always use linear sampling.
+    //              It seems to break blending though... -_-
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 -----------------------------------
 // git put version into code
