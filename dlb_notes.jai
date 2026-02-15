@@ -57,6 +57,40 @@ Simp/immediate.jai:6 (cache texture to prevent useless texture binds)
     +    state.current_texture = texture;
      }
 
+
+    @@ -18,6 +18,8 @@ Immediate_State :: struct {
+        coordinate_system := Simp_Coordinate_System.RIGHT_HANDED;
+
+        // We may wish to add a user-data pointer here.
+    +    camera_offset: Vector2;
+    +    camera_zoom: float;
+    }
+
+    @@ -348,11 +350,22 @@ immediate_set_2d_projection :: (render_target_width: s32, render_target_height:
+            return;
+        }
+
+    +    offset := context.simp.camera_offset;
+    +    zoom := context.simp.camera_zoom;
+    +
+        m: Matrix4 = ---;
+        if state.coordinate_system == .LEFT_HANDED {
+    -        m = orthographic_projection_matrix(0, cast(float) render_target_width, cast(float) render_target_height, 0, -1.0, 1.0);
+    +        left   := floor(offset.x / zoom);
+    +        right  := floor((offset.x + render_target_width) / zoom);
+    +        bottom := floor((offset.y + render_target_height) / zoom);
+    +        top    := floor(offset.y / zoom);
+    +        m = orthographic_projection_matrix(left, right, bottom, top, -1.0, 1.0);
+        } else {
+    -        m = orthographic_projection_matrix(0, cast(float) render_target_width, 0, cast(float) render_target_height, -1.0, 1.0);
+    +        left   := floor(offset.x / zoom);
+    +        right  := floor((offset.x + render_target_width) / zoom);
+    +        bottom := floor(offset.y / zoom);
+    +        top    := floor((offset.y + render_target_height) / zoom);
+    +        m = orthographic_projection_matrix(left, right, bottom, top, -1.0, 1.0);
+        }
+
+
 Simp/shader.jai:33
 
     set_shader_for_images :: (texture: *Texture) {
