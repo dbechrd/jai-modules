@@ -109,7 +109,7 @@ Simp/shader.jai:33
 
 Simp/immediate.jai:195
 
-    immediate_line :: (p0: Vector2, p1: Vector2, thickness: float, color: Vector4) {
+    immediate_line :: (p0: Vector2, p1: Vector2, color: Vector4, thickness := 1.0) {
         CheckSpace(6);
 
         normal := normalize(Vector2.{ p1.y - p0.y, -(p1.x - p0.x) });
